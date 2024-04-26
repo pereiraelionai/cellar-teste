@@ -86,15 +86,21 @@
                 <li class="nav-item">
                     <a class="nav-link text-dark" href="{{ route('home') }}"><i class="bi bi-house-fill"></i> Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ route('categoria.index') }}"><i class="bi bi-tags-fill"></i> Categorias</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ route('produto.index') }}"><i class="bi bi-box-seam-fill"></i> Produtos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="{{ route('usuario.index') }}"><i class="bi bi-people-fill"></i> Usuários</a>
-                </li>
+                @if(session()->has('permissao') && session('permissao')->categorias)
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ route('categoria.index') }}"><i class="bi bi-tags-fill"></i> Categorias</a>
+                    </li>
+                @endif
+                @if(session()->has('permissao') && session('permissao')->produtos)
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ route('produto.index') }}"><i class="bi bi-box-seam-fill"></i> Produtos</a>
+                    </li>
+                @endif
+                @if(Auth::user()->admin)
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{{ route('usuario.index') }}"><i class="bi bi-people-fill"></i> Usuários</a>
+                    </li>
+                @endif
             </ul>
         </div>        
         @endif

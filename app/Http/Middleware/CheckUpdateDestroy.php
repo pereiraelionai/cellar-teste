@@ -30,7 +30,7 @@ class CheckUpdateDestroy
         // CATEGORIA
         //------------------------------------------------------------------------------------
         if($controller == 'categoria') {
-            $id = $request->route()->parameter('categorium');
+            $id = $request->route()->parameter('categoria');
 
             $categoria = Categoria::with('usuarios')
                                     ->where('categorias.id', $id)
@@ -74,7 +74,13 @@ class CheckUpdateDestroy
         if($controller == 'usuario') {
             $id = $request->route()->parameter('usuario');
 
-            $usuario = User::withTrashed()->where('id', $id)->where('created_by', Auth::user()->id)->first();
+            $usuario = User::withTrashed();
+            if(Auth::user()->admin) {
+                $usuario->find(Auth::user()->id);
+            } else {
+                $usuario->where('id', $id)->where('created_by', Auth::user()->id)->first();
+            }
+            
             if(!$usuario) return response()->json(['message' => 'Não autorizado.'], 403); 
         }
 

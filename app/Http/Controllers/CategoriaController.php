@@ -11,17 +11,6 @@ class CategoriaController extends Controller
 {
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('check.updates:categoria')->only(['update', 'destroy']);
-    }
-
-    /**
      * Display a listing of the resource.
      */
     public function index()

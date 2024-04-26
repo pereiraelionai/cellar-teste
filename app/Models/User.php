@@ -45,4 +45,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function permissao() {
+        return $this->hasOne('App\Models\Permissao', 'usuario_id', 'id');
+    }
 }

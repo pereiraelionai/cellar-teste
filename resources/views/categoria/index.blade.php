@@ -10,7 +10,9 @@
             </div>
         </div>
         <div class="btn-toolbar mb-2">
-            <button class="btn btn-success" onclick="modalSalvar()">Nova Categoria</button>                       
+        @if(session('permissao')->criar_editar)
+            <button class="btn btn-success" onclick="modalSalvar()">Nova Categoria</button>  
+        @endif                     
         </div>
     </div>
 

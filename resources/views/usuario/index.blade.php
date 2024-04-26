@@ -45,6 +45,37 @@
                 </div>
             </div>
 
+            <div id="div-permissoes">
+                <div class="row mt-3">
+                    <div class="col-md">
+                        <strong for="menus" class="form-label">Modulos:</strong>
+                        <br>
+                        <div class="form-check form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="check_categorias">
+                            <label class="form-check-label" for="check_categorias">Categorias</label>
+                        </div>                                        
+                        <div class="form-check form-check">
+                            <input class="form-check-input" type="checkbox" id="check_produtos">
+                            <label class="form-check-label" for="check_produtos">Produtos</label>
+                        </div>
+                    </div>     
+                    
+                    <div class="col-md">
+                        <strong for="menus" class="form-label">Permissões:</strong>
+                        <br>
+                        <div class="form-check form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="check_criar_editar">
+                            <label class="form-check-label" for="check_criar_editar">Criar / Editar</label>
+                        </div>                                        
+                        <div class="form-check form-check">
+                            <input class="form-check-input" type="checkbox" id="check_excluir">
+                            <label class="form-check-label" for="check_excluir">Excluir</label>
+                        </div>
+                    </div>  
+                </div> 
+                <div id="permissoesError" class="invalid-feedback"></div>
+            </div>
+
             <input type="hidden" id="token" value="{{ csrf_token() }}">
        </div>
 
@@ -98,6 +129,9 @@
         // restaurando input email
         document.getElementById('div-input-email').style = 'display: block';
         
+        // Verificando se o usuario altera permissoes para exibir os campos
+        document.getElementById('div-permissoes').style = 'display: block';
+        
         // Setando btn para salvar
         $('#btnModalUsuario').off('click').removeClass().addClass('btn btn-success').text('Salvar').click(salvar);
         // Abrir modal
@@ -106,9 +140,18 @@
 
     function salvar()
     {
+        // Pegando permissoes
+        const arrayPermissoes = {
+            categoria: document.getElementById('check_categorias').checked,
+            produto: document.getElementById('check_produtos').checked,
+            criar_editar: document.getElementById('check_criar_editar').checked,
+            excluir: document.getElementById('check_excluir').checked,
+        }
+        
         var data = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
+            permissoes: JSON.stringify(arrayPermissoes),
             _token: document.getElementById('token').value
         };
 
@@ -147,17 +190,30 @@
         });
     }
 
-    function modalEditar(id, nome)
+    function modalEditar(usuario)
     {   
+        console.log(usuario)
         // Limpar form
         limparModal();
         
         // Setando dados no form
-        document.getElementById('name').value = nome;
-        document.getElementById('id_usuario').value = id;
+        document.getElementById('name').value = usuario.name;
+        document.getElementById('id_usuario').value = usuario.id;
 
         // ocultando input email
         document.getElementById('div-input-email').style = 'display: none';
+        
+        // Apenas usuarios tipo Usuario tem permissoes alteradas
+        if(usuario.admin) {
+            document.getElementById('div-permissoes').style = 'display: none';
+        } else {
+            document.getElementById('div-permissoes').style = 'display: block';
+            // Set nas permissoes
+            document.getElementById('check_categorias').checked = usuario.permissao.categorias;
+            document.getElementById('check_produtos').checked = usuario.permissao.produtos;
+            document.getElementById('check_criar_editar').checked = usuario.permissao.criar_editar;
+            document.getElementById('check_excluir').checked = usuario.permissao.excluir;            
+        }
 
         // Setando btn para editar
         $('#btnModalUsuario').off('click').removeClass().addClass('btn btn-warning').text('Editar').click(editar);
@@ -167,9 +223,18 @@
     }
 
     function editar()
-    {
+    {   
+        // Pegando permissoes
+        const arrayPermissoes = {
+            categoria: document.getElementById('check_categorias').checked,
+            produto: document.getElementById('check_produtos').checked,
+            criar_editar: document.getElementById('check_criar_editar').checked,
+            excluir: document.getElementById('check_excluir').checked,
+        }
+        
         var data = {
             name: document.getElementById('name').value,
+            permissoes: JSON.stringify(arrayPermissoes),
             _method: 'put',
             _token: document.getElementById('token').value
         };
@@ -281,6 +346,10 @@
         // Limpa todos os campos de erro
         $('.is-invalid').removeClass('is-invalid');
         $('.invalid-feedback').html('');
+        document.getElementById('check_categorias').checked = false;
+        document.getElementById('check_produtos').checked = false;
+        document.getElementById('check_criar_editar').checked = false;
+        document.getElementById('check_excluir').checked = false;
         
         // Limpando formulario
         document.getElementById('name').value = '';

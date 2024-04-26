@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permissao;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,22 +12,11 @@ class UsuarioController extends Controller
 {
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('check.updates:usuario')->only(['update', 'destroy', 'ativar']);
-    }
-
-    /**
      * Display a listing of the resource.
      */
     public function index()
     {   
-        $usuarios = User::withTrashed()->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
 
         return view('usuario.index', ['usuarios' => $usuarios]);
     }
@@ -39,7 +29,8 @@ class UsuarioController extends Controller
         // Validações
         $regras = [
             'name' => 'required|min:3|max:30',
-            'email' => 'required|email|unique:users'
+            'email' => 'required|email|unique:users',
+            'permissoes'=> 'json'
         ];
 
         $msg = [
@@ -48,10 +39,13 @@ class UsuarioController extends Controller
             'email' => 'Email inválido',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Email já cadastrado.'
+            'unique' => 'Email já cadastrado.',
+            'json' => 'Permissões com formato inválido.'
         ];
 
         $request->validate($regras, $msg);
+
+        $permissoes = json_decode($request->input('permissoes'));
 
         $usuario = new User();
         $usuario->name = ucwords($request->input('name'));
@@ -63,7 +57,18 @@ class UsuarioController extends Controller
 
         if(!$usuario->id) return response()->json(['message' => 'Erro ao cadastrar usuário'], 500);
 
-        $usuarios = User::withTrashed()->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        // Criando registro na tb permissoes
+        $permissao = Permissao::create([
+            'usuario_id' => $usuario->id,
+            'categorias' => $permissoes->categoria,
+            'produtos' => $permissoes->produto,
+            'criar_editar' => $permissoes->criar_editar,
+            'excluir' => $permissoes->excluir,
+        ]);
+
+        if(!$permissao->id) return response()->json(['message' => 'Erro ao cadastrar permissões'], 500);
+
+        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
 
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();                                
 
@@ -78,6 +83,7 @@ class UsuarioController extends Controller
         // Validações
         $regras = [
             'name' => 'required|min:3|max:30',
+            'permissoes' => 'json'
         ];
     
         $msg = [
@@ -85,10 +91,13 @@ class UsuarioController extends Controller
             'required' => 'O campo :attribute é obrigatório.',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Email já cadastrado.'
+            'unique' => 'Email já cadastrado.',
+            'json' => 'Permissões com formato inválido.'
         ];
     
         $request->validate($regras, $msg);
+
+        $permissoes = json_decode($request->input('permissoes'));
         
         // Editando usuario
         $usuario = User::withTrashed()->find($id);
@@ -96,9 +105,26 @@ class UsuarioController extends Controller
             'name' => ucfirst($request->input('name'))
         ]);
 
+        // Editando as permissões se o usuario nao for admin
+        if(!$usuario->admin) {
+            $permissao = Permissao::where('usuario_id', $usuario->id)->first();
+            if ($permissao) {
+                // Atualiza os atributos do modelo
+                $permissao->categorias = $permissoes->categoria;
+                $permissao->produtos = $permissoes->produto;
+                $permissao->criar_editar = $permissoes->criar_editar;
+                $permissao->excluir = $permissoes->excluir;
+    
+                // Salva as alterações no banco de dados
+                $permissao->save();
+            } else {
+                return response()->json(['message' => 'Erro ao editar permissões', 500]);
+            }
+        }
+
         if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar usuário', 500]);
     
-        $usuarios = User::withTrashed()->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();
     
         return response()->json($view, 200);
@@ -113,7 +139,7 @@ class UsuarioController extends Controller
         $usuario = User::withTrashed()->find($id);
         if(!$usuario->delete()) return response()->json(['message' => 'Erro ao inativar usuário.'], 500);
 
-        $usuarios = User::withTrashed()->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
 
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();  
 
@@ -125,7 +151,7 @@ class UsuarioController extends Controller
         $usuario = User::withTrashed()->find($id);
         if (!$usuario->restore()) return response()->json(['message' => 'Erro ao ativar usuário.'], 500);
 
-        $usuarios = User::withTrashed()->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
 
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();  
 

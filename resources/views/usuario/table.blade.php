@@ -26,7 +26,7 @@
                 </td>
                 <td>{{ \App\Util::formatarDataHora($item->created_at) }}</td>
                 <td>
-                    <button class="btn btn-warning" onclick="modalEditar({{ $item->id }}, '{{ $item->name }}')"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="btn btn-warning" onclick="modalEditar({{ $item }})"><i class="bi bi-pencil-fill"></i></button>
                     @unless($item->admin || $item->deleted_at)
                         <button class="btn btn-danger" onclick="modalExcluir({{ $item->id }}, '{{ $item->name }}')"><i class="bi bi-trash3-fill"></i> </button>
                     @endunless

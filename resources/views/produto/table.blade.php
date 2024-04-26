@@ -18,8 +18,12 @@
                 <td>{{ $item->usuarios->name }}</td>
                 <td>{{ \App\Util::formatarDataHora($item->created_at) }}</td>
                 <td>
+                @if(session('permissao')->criar_editar)
                     <button class="btn btn-warning" onclick="modalEditar({{ $item->id }}, '{{ $item->nome }}', '{{ $item->valor }}', {{ $item->categorias->id }})"><i class="bi bi-pencil-fill"></i></button>
+                @endif
+                @if(session('permissao')->excluir)
                     <button class="btn btn-danger" onclick="modalExcluir({{ $item->id }}, '{{ $item->nome }}')"><i class="bi bi-trash3-fill"></i> </button>
+                @endif
                 </td>
             </tr>
         @endforeach
