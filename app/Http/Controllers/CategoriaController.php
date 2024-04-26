@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\View;
 
 class CategoriaController extends Controller
@@ -19,6 +18,7 @@ class CategoriaController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('check.updates:categoria')->only(['update', 'destroy']);
     }
 
     /**
@@ -26,7 +26,7 @@ class CategoriaController extends Controller
      */
     public function index()
     {   
-        $categorias = self::getCategorias();
+        $categorias = self::getCategorias()->paginate(10);
         
         return view('categoria.index', ['categorias' => $categorias]);
     }
@@ -38,22 +38,14 @@ class CategoriaController extends Controller
     {          
         // Validações
         $regras = [
-            'nome' => [
-                'required',
-                'min:2',
-                'max:30',
-                Rule::unique('categorias')->where(function ($query) use ($request) {
-                     // Verifica se o usuario ou o usuario admin ja cadastrou a categoria
-                    return $query->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->whereNull('deleted_at');
-                }),
-            ]
+            'nome' => 'required|min:2|max:30|categoria' // A validação categoria verifica se a categoria já nao foi criada por algum usuario relacionado
         ];
 
         $msg = [
-            'required' => 'O nome da catgoria é obrigatório.',
+            'required' => 'O campo :attribute é obrigatório.',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Categoria já cadastrada.'
+            'categoria' => 'Categoria já cadastrada.'
         ];
 
         $request->validate($regras, $msg);
@@ -61,12 +53,12 @@ class CategoriaController extends Controller
         // Salvando categoria
         $categoria = new Categoria();
         $categoria->nome = ucfirst($request->input('nome'));
-        $categoria->usuario_id = Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id;
+        $categoria->usuario_id = Auth::user()->id;
         $categoria->save();
 
-        if(!$categoria) return response()->json(['message' => 'Erro ao cadastrar categoria', 500]);
+        if(!$categoria->id) return response()->json(['message' => 'Erro ao cadastrar categoria', 500]);
 
-        $categorias = self::getCategorias();
+        $categorias = self::getCategorias()->paginate(10);
 
         $view = View::make('categoria/table', ['categorias' => $categorias])->render();                                
 
@@ -78,42 +70,29 @@ class CategoriaController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-
-        // Verifica se a categoria pertence ao usuario ou ao usuario admin
-        $categoria = Categoria::where('id', $id)->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->first();
-        if(!$categoria) return response()->json(['message' => 'Não autorizado'], 403);
-        
+    {        
         // Validações
         $regras = [
-            'nome' => [
-                'required',
-                'min:2',
-                'max:30',
-                Rule::unique('categorias')->where(function ($query) use ($request) {
-                    // Verifica se o usuario ou o usuario admin ja cadastrou a categoria
-                    return $query->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->whereNull('deleted_at');
-                }),
-            ]
+            'nome' => 'required|min:2|max:30|categoria' // A validação categoria verifica se a categoria já nao foi criada por algum usuario relacionado
         ];
 
         $msg = [
             'required' => 'O campo :attribute é obrigatório.',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Categoria já cadastrada.'
+            'categoria' => 'Categoria já cadastrada.'
         ];
 
         $request->validate($regras, $msg);
 
-        // Editando a categoria
+        $categoria = Categoria::find($id);
         $updatedSuccess = $categoria->update([
             'nome' => ucfirst($request->input('nome'))
         ]);
 
         if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar categoria', 500]);
 
-        $categorias = self::getCategorias();
+        $categorias = self::getCategorias()->paginate(10);
 
         $view = View::make('categoria/table', ['categorias' => $categorias])->render();                                
 
@@ -125,12 +104,10 @@ class CategoriaController extends Controller
      */
     public function destroy(string $id)
     {   
-        $categoria = Categoria::where('id', $id)->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->first();
-        if(!$categoria) return response()->json(['message' => 'Não autorizado.'], 403); // Verifica se existe a categoria para esse usuario ou usuario admin
-
+        $categoria = Categoria::find($id);
         if(!$categoria->delete()) return response()->json(['message' => 'Erro ao excluir categoria.'], 500);
 
-        $categorias = self::getCategorias();
+        $categorias = self::getCategorias()->paginate(10);
 
         $view = View::make('categoria/table', ['categorias' => $categorias])->render();  
 
@@ -141,8 +118,13 @@ class CategoriaController extends Controller
     public static function getCategorias()
     {
         return Categoria::with('usuarios')
-                        ->orWhere('categorias.usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)
-                        ->orderByDesc('id')
-                        ->paginate(10);
+                        ->where(function ($query) {
+                            $query->where('categorias.usuario_id', Auth::user()->created_by)
+                                  ->orWhere('categorias.usuario_id', Auth::user()->id);
+                        })
+                        ->orWhereHas('usuarios', function ($query) {
+                            $query->where('created_by', Auth::user()->id);
+                        })
+                        ->orderByDesc('id');
     }
 }

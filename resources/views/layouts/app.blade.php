@@ -93,7 +93,7 @@
                     <a class="nav-link text-dark" href="{{ route('produto.index') }}"><i class="bi bi-box-seam-fill"></i> Produtos</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#"><i class="bi bi-people-fill"></i> Usuários</a>
+                    <a class="nav-link text-dark" href="{{ route('usuario.index') }}"><i class="bi bi-people-fill"></i> Usuários</a>
                 </li>
             </ul>
         </div>        

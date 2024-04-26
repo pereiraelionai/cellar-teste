@@ -19,6 +19,7 @@ class ProdutoController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('check.updates:produto')->only(['update', 'destroy']);
     }
 
     /**
@@ -26,7 +27,7 @@ class ProdutoController extends Controller
      */
     public function index()
     {   
-        $categorias = CategoriaController::getCategorias();
+        $categorias = CategoriaController::getCategorias()->get();
         $produtos = $this->getProdutos();
         
         return view('produto.index', ['produtos' => $produtos, 'categorias' => $categorias]);
@@ -39,15 +40,7 @@ class ProdutoController extends Controller
     {
         // Validações
         $regras = [
-            'nome' => [
-                'required',
-                'min:2',
-                'max:30',
-                Rule::unique('produtos')->where(function ($query) use ($request) {
-                    // Verifica se o usuario ou o usuario admin ja cadastrou a categoria
-                    return $query->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->whereNull('deleted_at');
-                }),
-            ],
+            'nome' => 'required|min:2|max:30|produto',  // A validação produto verifica se o produto já nao foi criada por algum usuario relacionado
             'valor' => 'required|valor',
             'categoria' => 'required|exists:categorias,id'
         ];
@@ -56,7 +49,7 @@ class ProdutoController extends Controller
             'required' => 'O campo :attribute é obrigatório.',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Produto já cadastrado.',
+            'produto' => 'Produto já cadastrado.',
             'exists' => 'Categoria inexistente.',
             'valor' => 'Valor máximo R$ 999.999,99'
         ];
@@ -73,10 +66,10 @@ class ProdutoController extends Controller
         $produto->nome = ucfirst($request->input('nome'));
         $produto->valor = $valorFloat;
         $produto->categoria_id = $request->input('categoria');
-        $produto->usuario_id = Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id;
+        $produto->usuario_id = Auth::user()->id;
         $produto->save();
 
-        if(!$produto) return response()->json(['message' => 'Erro ao cadastrar produto', 500]);
+        if(!$produto->id) return response()->json(['message' => 'Erro ao cadastrar produto', 500]);
 
         $produtos = $this->getProdutos();
 
@@ -91,38 +84,20 @@ class ProdutoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // Verifica se o produto pertence ao usuario ou ao usuario admin
-        $produto = Produto::where('id', $id)->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->first();
-        if(!$produto) return response()->json(['message' => 'Não autorizado'], 403);
+        $produto = Produto::find($id);
 
         // Validações
-        if($produto->nome != $request->input('nome')) {
-            $regras = [
-                'nome' => [
-                    'required',
-                    'min:2',
-                    'max:30',
-                    Rule::unique('produtos')->where(function ($query) use ($request) {
-                        // Verifica se o usuario ou o usuario admin ja cadastrou a categoria
-                        return $query->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->whereNull('deleted_at');
-                    }),
-                ],
-                'valor' => 'required|valor',
-                'categoria' => 'required|exists:categorias,id'
-            ];
-        } else {
-            $regras = [
-                'nome' => 'required|min:2|max:30',
-                'valor' => 'required|valor',
-                'categoria' => 'required|exists:categorias,id'
-            ];
-        }
+        $regras = [
+            'nome' => 'required|min:2|max:30|produto', // A validação produto verifica se o produto já nao foi criada por algum usuario relacionado
+            'valor' => 'required|valor',
+            'categoria' => 'required|exists:categorias,id'
+        ];
 
         $msg = [
             'required' => 'O campo :attribute é obrigatório.',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Produto já cadastrado.',
+            'produto' => 'Produto já cadastrado.',
             'exists' => 'Categoria inexistente.',
             'valor' => 'Valor máximo R$ 999.999,99'
         ];
@@ -154,9 +129,7 @@ class ProdutoController extends Controller
      */
     public function destroy(string $id)
     {
-        $produto = Produto::where('id', $id)->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->first();
-        if(!$produto) return response()->json(['message' => 'Não autorizado.'], 403); // Verifica se existe o produto para esse usuario ou usuario admin
-
+        $produto = Produto::find($id);
         if(!$produto->delete()) return response()->json(['message' => 'Erro ao excluir produto.'], 500);
 
         $produtos = $this->getProdutos();
@@ -169,9 +142,15 @@ class ProdutoController extends Controller
     private function getProdutos()
     {
         return Produto::with('categorias')
-                        ->with('usuarios')
-                        ->orWhere('produtos.usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)
-                        ->orderByDesc('id')
-                        ->paginate(10);
+                      ->with('usuarios')
+                      ->where(function ($query) {
+                          $query->where('produtos.usuario_id', Auth::user()->id)
+                                ->orWhere('produtos.usuario_id', Auth::user()->created_by);
+                      })
+                      ->orWhereHas('usuarios', function ($query) {
+                          $query->where('created_by', Auth::user()->id);
+                      })
+                      ->orderByDesc('id')
+                      ->paginate(10);
     }
 }

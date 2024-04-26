@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\UsuarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +26,5 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::resource('/categoria', CategoriaController::class);
 Route::resource('/produto', ProdutoController::class);
+Route::resource('/usuario', UsuarioController::class);
+Route::patch('/usuario/ativar/{usuario}', [App\Http\Controllers\UsuarioController::class, 'ativar']);
