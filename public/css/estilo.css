@@ -1,0 +1,37 @@
+/* Definindo altura total da página */
+html, body {
+    height: 100%;
+}
+/* Estilo do menu lateral */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 55px;
+    left: 0;
+    padding-top: 20px;
+    border-right: 1px solid #d9d9d9;
+}
+/* Estilo do conteudo principal */
+.main-content {
+    margin-left: 250px; /* Largura do menu lateral */
+    padding: 20px;
+}
+
+.card-dash {
+    background-color: white;
+}
+
+.icon-shape {
+    padding: 12px;
+    width: 55px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.icon-dash {
+    font-size: 1.25rem;
+}

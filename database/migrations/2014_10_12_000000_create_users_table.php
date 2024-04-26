@@ -17,7 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('admin');
+            $table->unsignedBigInteger('created_by')->nullable()->comment('Se o usuário foi criado pelo usuário admin recebe o id do admin nessa coluna');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

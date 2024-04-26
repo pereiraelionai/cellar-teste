@@ -4,36 +4,60 @@
 
 <!-- Tabela Principal -->
 <div class="main-content">
-    <h2>Tabela Principal</h2>
-    <div class="card">
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Nome</th>
-                        <th scope="col">Descrição</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td>Item 1</td>
-                        <td>Descrição do Item 1</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Item 2</td>
-                        <td>Descrição do Item 2</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">3</th>
-                        <td>Item 3</td>
-                        <td>Descrição do Item 3</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <h2>Resumo dos dados</h2>
+    <div id="graficos">
+        <div class="row mt-3">
+            <div class="col-lg">
+              <div class="card card-stats mb-4 mb-xl-0" style="height: 130px;">
+                <div class="card-body card-dash">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-2">Categorias Cadastradas</h5>
+                      <span class="h3 font-weight-bold mb-0">5</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-success text-white rounded-circle shadow">
+                      <i class="bi bi-tags-fill icon-dash"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>      
+            <div class="col-lg">
+              <div class="card card-stats mb-4 mb-xl-0" style="height: 130px;">
+                <div class="card-body card-dash">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-2">Valor em Produtos</h5>
+                      <span class="h3 font-weight-bold mb-0">R$ 50,00</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-success text-white rounded-circle shadow">
+                        <i class="bi bi-box-seam-fill icon-dash"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>  
+            <div class="col-lg">
+              <div class="card card-stats mb-4 mb-xl-0" style="height: 130px;">
+                <div class="card-body card-dash">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-2">Usuários Ativos</h5>
+                      <span class="h3 font-weight-bold mb-0">8</span>
+                    </div>
+                    <div class="col-auto">
+                      <div class="icon icon-shape bg-success text-white rounded-circle shadow">
+                        <i class="bi bi-people-fill icon-dash"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>                             
+      </div>
 </div>
 @endsection

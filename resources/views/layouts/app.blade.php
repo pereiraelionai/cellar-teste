@@ -16,30 +16,12 @@
     <!-- Bootstrap Icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <!-- Estilo css -->
+    <link rel="stylesheet" href="{{ asset('css/estilo.css') }}">
+
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
-    <style>
-        /* Definindo altura total da página */
-        html, body {
-            height: 100%;
-        }
-        /* Estilo do menu lateral */
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 55px;
-            left: 0;
-            padding-top: 20px;
-            border-right: 1px solid #d9d9d9;
-        }
-        /* Estilo da tabela principal */
-        .main-content {
-            margin-left: 250px; /* Largura do menu lateral */
-            padding: 20px;
-        }
-    </style>
 </head>
 <body>
     <div id="app">
@@ -97,25 +79,33 @@
             </div>
         </nav>
 
-
         <!-- Menu Lateral -->
+        @if (Auth::check())
         <div class="sidebar">
             <ul class="nav flex-column mt-5">
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#"><i class="bi bi-tags-fill"></i> Categorias</a>
+                    <a class="nav-link text-dark" href="{{ route('home') }}"><i class="bi bi-house-fill"></i> Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#"><i class="bi bi-box-seam-fill"></i> Produtos</a>
+                    <a class="nav-link text-dark" href="{{ route('categoria.index') }}"><i class="bi bi-tags-fill"></i> Categorias</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="{{ route('produto.index') }}"><i class="bi bi-box-seam-fill"></i> Produtos</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark" href="#"><i class="bi bi-people-fill"></i> Usuários</a>
                 </li>
             </ul>
         </div>        
+        @endif
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
         <main class="py-4">
             @yield('content')
         </main>
     </div>
+
+    @yield('js')
 </body>
 </html>
