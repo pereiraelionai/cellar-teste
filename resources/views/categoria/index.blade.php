@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="btn-toolbar mb-2">
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#novaCategoriaModal" onclick="limparModal()">Nova Categoria</button>                       
+            <button class="btn btn-success" onclick="modalSalvar()">Nova Categoria</button>                       
         </div>
     </div>
 
@@ -22,50 +22,34 @@
 
 </div>
 
-<!-- Modal cadastrar caegoria -->
-<div class="modal fade" id="novaCategoriaModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<!-- Modal cadastrar/editar categoria -->
+<div class="modal fade" id="categoriaModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Nova Categoria</h1>
+        <h1 class="modal-title fs-5">Categoria</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-            <label for="nomeCategoria">Nome</label>
-            <input type="text" id="nomeCategoria" class="form-control">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" class="form-control">
             <div class="invalid-feedback"></div>
             <input type="hidden" id="token" value="{{ csrf_token() }}">
        </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-success" onclick="salvar()">Salvar</button>
+        <button type="button" id="btnModalCategoria"></button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Modal excluir categoria -->
-<div class="modal fade" id="excluirCategoriaModal" aria-hidden="true" data-bs-keyboard="false">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Excluir Categoria</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-            <p>Tem certeza que deseja excluir a categoria <strong id="nomeCategoriaExcluir"></strong>?</p>
-            <input type="hidden" id="token" value="{{ csrf_token() }}">
-            <input type="hidden" id="id_categoria">
-       </div>
+@include('layouts/modalExcluir', ['tipo' => 'Categoria'])
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-danger" onclick="excluir()">Excluir</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Id categoria para o update e destroy -->
+<input type="hidden" id="id_categoria">
 
 @endsection
 
@@ -73,10 +57,20 @@
 
 <script>
 
+    function modalSalvar()
+    {   
+        // Limpar form
+        limparModal();
+        // Setando btn para salvar
+        $('#btnModalCategoria').off('click').removeClass().addClass('btn btn-success').text('Salvar').click(salvar);
+        // Abrir modal
+        $('#categoriaModal').modal('show');
+    }
+
     function salvar()
     {
         var data = {
-            nome: document.getElementById('nomeCategoria').value,
+            nome: document.getElementById('nome').value,
             _token: document.getElementById('token').value
         };
 
@@ -86,7 +80,7 @@
             data: data,
             success: function(response) {
                 $('#table-categorias').html(response);
-                $('#novaCategoriaModal').modal('hide');
+                $('#categoriaModal').modal('hide');
 
                 // Alerta de sucesso
 
@@ -98,8 +92,8 @@
                     for (var campo in errors) {
                         if (errors.hasOwnProperty(campo)) {
                             var mensagem = errors[campo][0]; 
-                            $('#nomeCategoria').addClass('is-invalid'); 
-                            $('#nomeCategoria').siblings('.invalid-feedback').html(mensagem);
+                            $('#nome').addClass('is-invalid'); 
+                            $('#nome').siblings('.invalid-feedback').html(mensagem);
                         }
                     }
                 } else {
@@ -110,19 +104,67 @@
         });
     }
 
-    function limparModal()
-    {
-        document.getElementById('nomeCategoria').value = '';
-        $('#nomeCategoria').removeClass('is-invalid'); 
-        $('#nomeCategoria').siblings('.invalid-feedback').html(''); 
+    function modalEditar(id, nome)
+    {   
+        // Limpar form
+        limparModal();
+        
+        // Setando dados no form
+        document.getElementById('nome').value = nome;
+        document.getElementById('id_categoria').value = id;
 
+        // Setando btn para editar
+        $('#btnModalCategoria').off('click').removeClass().addClass('btn btn-warning').text('Editar').click(editar);
+
+        // Abrir modal
+        $('#categoriaModal').modal('show');
+    }
+
+    function editar()
+    {
+        var data = {
+            nome: document.getElementById('nome').value,
+            _method: 'put',
+            _token: document.getElementById('token').value
+        };
+
+        var id_categoria = document.getElementById('id_categoria').value;
+
+        $.ajax({
+            type: 'POST',
+            url: '/categoria/' + id_categoria,
+            data: data,
+            success: function(response) {
+                $('#table-categorias').html(response);
+                $('#categoriaModal').modal('hide');
+
+                // Alerta de sucesso
+
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status == 422) {
+                    var errors = xhr.responseJSON.errors;
+                    
+                    for (var campo in errors) {
+                        if (errors.hasOwnProperty(campo)) {
+                            var mensagem = errors[campo][0]; 
+                            $('#nome').addClass('is-invalid'); 
+                            $('#nome').siblings('.invalid-feedback').html(mensagem);
+                        }
+                    }
+                } else {
+                    // Alerta para erros
+
+                }
+            }
+        });
     }
 
     function modalExcluir(id, nome)
     {
-        document.getElementById('nomeCategoriaExcluir').innerHTML = nome;
+        document.getElementById('nomeExcluir').innerHTML = nome;
         document.getElementById('id_categoria').value = id;
-        $('#excluirCategoriaModal').modal('show');
+        $('#excluirModal').modal('show');
     }
 
     function excluir()
@@ -140,7 +182,7 @@
             data: data,
             success: function(response) {
                 $('#table-categorias').html(response);
-                $('#excluirCategoriaModal').modal('hide');
+                $('#excluirModal').modal('hide');
 
                 // Alerta de sucesso
 
@@ -149,6 +191,14 @@
                 // Alerta de erros
             }
         });
+    }
+
+    function limparModal()
+    {
+        document.getElementById('nome').value = '';
+        $('#nome').removeClass('is-invalid'); 
+        $('#nome').siblings('.invalid-feedback').html(''); 
+
     }
 
 </script>

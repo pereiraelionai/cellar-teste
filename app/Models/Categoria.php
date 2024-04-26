@@ -10,4 +10,10 @@ class Categoria extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    protected $fillable = ['nome'];
+
+    public function usuarios() {
+        return $this->belongsTo('App\Models\User', 'usuario_id', 'id');
+    }
 }

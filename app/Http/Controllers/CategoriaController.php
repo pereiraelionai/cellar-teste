@@ -26,8 +26,7 @@ class CategoriaController extends Controller
      */
     public function index()
     {   
-        // Get nas categorias criadas pelo usuário e criadas pelos usuários do seu user admin
-        $categorias = $this->getCategorias();
+        $categorias = self::getCategorias();
         
         return view('categoria.index', ['categorias' => $categorias]);
     }
@@ -54,7 +53,7 @@ class CategoriaController extends Controller
             'required' => 'O nome da catgoria é obrigatório.',
             'min' => 'Digite pelo menos 2 caracteres.',
             'max' => 'Digite no máximo 30 caracteres.',
-            'unique' => 'Categoria já cadastrada'
+            'unique' => 'Categoria já cadastrada.'
         ];
 
         $request->validate($regras, $msg);
@@ -62,19 +61,16 @@ class CategoriaController extends Controller
         // Salvando categoria
         $categoria = new Categoria();
         $categoria->nome = ucfirst($request->input('nome'));
-        $categoria->usuario_id = Auth::user()->id;
+        $categoria->usuario_id = Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id;
         $categoria->save();
 
-        // Tratando erro
         if(!$categoria) return response()->json(['message' => 'Erro ao cadastrar categoria', 500]);
 
-        // Get nas categorias
-        $categorias = $this->getCategorias();
+        $categorias = self::getCategorias();
 
-        // Montando tabela de categorias
         $view = View::make('categoria/table', ['categorias' => $categorias])->render();                                
 
-        return response()->json($view, 200);
+        return response()->json($view, 201);
 
     }
 
@@ -83,7 +79,45 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        // Verifica se a categoria pertence ao usuario ou ao usuario admin
+        $categoria = Categoria::where('id', $id)->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->first();
+        if(!$categoria) return response()->json(['message' => 'Não autorizado'], 403);
+        
+        // Validações
+        $regras = [
+            'nome' => [
+                'required',
+                'min:2',
+                'max:30',
+                Rule::unique('categorias')->where(function ($query) use ($request) {
+                    // Verifica se o usuario ou o usuario admin ja cadastrou a categoria
+                    return $query->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->whereNull('deleted_at');
+                }),
+            ]
+        ];
+
+        $msg = [
+            'required' => 'O campo :attribute é obrigatório.',
+            'min' => 'Digite pelo menos 2 caracteres.',
+            'max' => 'Digite no máximo 30 caracteres.',
+            'unique' => 'Categoria já cadastrada.'
+        ];
+
+        $request->validate($regras, $msg);
+
+        // Editando a categoria
+        $updatedSuccess = $categoria->update([
+            'nome' => ucfirst($request->input('nome'))
+        ]);
+
+        if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar categoria', 500]);
+
+        $categorias = self::getCategorias();
+
+        $view = View::make('categoria/table', ['categorias' => $categorias])->render();                                
+
+        return response()->json($view, 201);
     }
 
     /**
@@ -92,32 +126,23 @@ class CategoriaController extends Controller
     public function destroy(string $id)
     {   
         $categoria = Categoria::where('id', $id)->where('usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)->first();
-        if(!$categoria) return response()->json(['message' => 'Categoria não encontrada.'], 404); // Verifica se existe a categoria para esse usuario
+        if(!$categoria) return response()->json(['message' => 'Não autorizado.'], 403); // Verifica se existe a categoria para esse usuario ou usuario admin
 
         if(!$categoria->delete()) return response()->json(['message' => 'Erro ao excluir categoria.'], 500);
 
-        // Get nas categorias
-        $categorias = $this->getCategorias();
+        $categorias = self::getCategorias();
 
-        // Montando tabela de categorias
         $view = View::make('categoria/table', ['categorias' => $categorias])->render();  
 
         return response()->json($view, 200);
 
     }
 
-    private function getCategorias()
+    public static function getCategorias()
     {
-        return Categoria::select(
-            'categorias.id',
-            'nome',
-            'users.name as nome_usuario',
-            'categorias.created_at'
-        )
-        ->leftJoin('users', 'users.id', '=', 'categorias.usuario_id')
-        ->where('users.created_by', Auth::user()->created_by)
-        ->orWhere('categorias.usuario_id', Auth::user()->id)
-        ->orderByDesc('id')
-        ->paginate(10);
+        return Categoria::with('usuarios')
+                        ->orWhere('categorias.usuario_id', Auth::user()->created_by ? Auth::user()->created_by : Auth::user()->id)
+                        ->orderByDesc('id')
+                        ->paginate(10);
     }
 }

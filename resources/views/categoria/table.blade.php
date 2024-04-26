@@ -2,7 +2,6 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th scope="col">ID</th>
             <th scope="col">Nome</th>
             <th scope="col">Criado por</th>
             <th scope="col">Criado em</th>
@@ -11,12 +10,11 @@
     <tbody>
         @foreach($categorias as $item)
             <tr>
-                <th scope="row">{{ $item->id }}</th>
                 <td>{{ $item->nome }}</td>
-                <td>{{ $item->nome_usuario }}</td>
+                <td>{{ $item->usuarios->name }}</td>
                 <td>{{ \App\Util::formatarDataHora($item->created_at) }}</td>
                 <td>
-                    <button class="btn btn-warning"><i class="bi bi-pencil-fill"></i> </button>
+                    <button class="btn btn-warning" onclick="modalEditar({{ $item->id }}, '{{ $item->nome }}')"><i class="bi bi-pencil-fill"></i> </button>
                     <button class="btn btn-danger" onclick="modalExcluir({{ $item->id }}, '{{ $item->nome }}')"><i class="bi bi-trash3-fill"></i> </button>
                 </td>
             </tr>

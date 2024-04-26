@@ -2,7 +2,6 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th scope="col">ID</th>
             <th scope="col">Nome</th>
             <th scope="col">Valor</th>
             <th scope="col">Categoria</th>
@@ -13,15 +12,14 @@
     <tbody>
         @foreach($produtos as $item)
             <tr>
-                <th scope="row">{{ $item->id }}</th>
                 <td>{{ $item->nome }}</td>
                 <td>{{ \App\Util::formatarReais($item->valor) }}</td>
-                <td>{{ $item->categoria }}</td>
-                <td>{{ $item->nome_usuario }}</td>
+                <td>{{ $item->categorias->nome }}</td>
+                <td>{{ $item->usuarios->name }}</td>
                 <td>{{ \App\Util::formatarDataHora($item->created_at) }}</td>
                 <td>
-                    <button class="btn btn-warning"><i class="bi bi-pencil-fill"></i> </button>
-                    <button class="btn btn-danger"><i class="bi bi-trash3-fill"></i> </button>
+                    <button class="btn btn-warning" onclick="modalEditar({{ $item->id }}, '{{ $item->nome }}', '{{ $item->valor }}', {{ $item->categorias->id }})"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="btn btn-danger" onclick="modalExcluir({{ $item->id }}, '{{ $item->nome }}')"><i class="bi bi-trash3-fill"></i> </button>
                 </td>
             </tr>
         @endforeach
