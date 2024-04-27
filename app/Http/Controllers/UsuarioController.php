@@ -57,6 +57,9 @@ class UsuarioController extends Controller
 
         if(!$usuario->id) return response()->json(['message' => 'Erro ao cadastrar usuário'], 500);
 
+        // Envia o email de verificação
+        $usuario->sendEmailVerificationNotification();
+
         // Criando registro na tb permissoes
         $permissao = Permissao::create([
             'usuario_id' => $usuario->id,

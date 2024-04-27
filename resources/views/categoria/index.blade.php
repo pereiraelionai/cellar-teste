@@ -50,6 +50,10 @@
 <!-- Modal excluir categoria -->
 @include('layouts/modalExcluir', ['tipo' => 'Categoria'])
 
+
+<!-- Alerta de erro -->
+@include('layouts/alerta')
+
 <!-- Id categoria para o update e destroy -->
 <input type="hidden" id="id_categoria">
 
@@ -84,8 +88,6 @@
                 $('#table-categorias').html(response);
                 $('#categoriaModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
                 if (xhr.status == 422) {
@@ -99,8 +101,11 @@
                         }
                     }
                 } else {
-                    // Alerta para erros
-
+                    $('#categoriaModal').modal('hide');
+                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                    var toast = document.getElementById('liveToast');
+                    var bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
                 }
             }
         });
@@ -140,8 +145,6 @@
                 $('#table-categorias').html(response);
                 $('#categoriaModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
                 if (xhr.status == 422) {
@@ -155,8 +158,11 @@
                         }
                     }
                 } else {
-                    // Alerta para erros
-
+                    $('#categoriaModal').modal('hide');
+                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                    var toast = document.getElementById('liveToast');
+                    var bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
                 }
             }
         });
@@ -186,11 +192,13 @@
                 $('#table-categorias').html(response);
                 $('#excluirModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
-                // Alerta de erros
+                $('#excluirModal').modal('hide');
+                document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                var toast = document.getElementById('liveToast');
+                var bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
             }
         });
     }

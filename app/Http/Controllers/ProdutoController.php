@@ -58,7 +58,7 @@ class ProdutoController extends Controller
         $produto->usuario_id = Auth::user()->id;
         $produto->save();
 
-        if(!$produto->id) return response()->json(['message' => 'Erro ao cadastrar produto', 500]);
+        if(!$produto->id) return response()->json(['message' => 'Erro ao cadastrar produto'], 500);
 
         $produtos = $this->getProdutos();
 
@@ -104,7 +104,7 @@ class ProdutoController extends Controller
             'categoria_id' => $request->input('categoria')
         ]);
 
-        if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar produto', 500]);
+        if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar produto'], 500);
 
         $produtos = $this->getProdutos();
 

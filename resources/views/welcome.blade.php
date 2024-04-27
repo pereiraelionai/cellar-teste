@@ -30,7 +30,7 @@
                     </li>
                     @if (Route::has('register'))
                     <li class="nav-item">
-                        <a href="{{ route('register') }}" class="btn btn-outline-secondary m-2">Registrar-se</a>
+                        <a href="{{ route('register') }}" class="btn btn-outline-secondary m-2 me-3">Cadastrar</a>
                     </li>
                     @endif
                 @endauth

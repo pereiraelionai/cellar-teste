@@ -45,7 +45,7 @@ class CategoriaController extends Controller
         $categoria->usuario_id = Auth::user()->id;
         $categoria->save();
 
-        if(!$categoria->id) return response()->json(['message' => 'Erro ao cadastrar categoria', 500]);
+        if(!$categoria->id) return response()->json(['message' => 'Erro ao cadastrar categoria'], 500);
 
         $categorias = self::getCategorias()->paginate(10);
 
@@ -79,7 +79,7 @@ class CategoriaController extends Controller
             'nome' => ucfirst($request->input('nome'))
         ]);
 
-        if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar categoria', 500]);
+        if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar categoria'], 500);
 
         $categorias = self::getCategorias()->paginate(10);
 

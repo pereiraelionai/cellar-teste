@@ -111,6 +111,9 @@
 <!-- Modal excluir produto -->
 @include('layouts/modalExcluir', ['tipo' => 'Usuario'])
 
+<!-- Alerta de erro -->
+@include('layouts/alerta')
+
 <!-- Id produto para o update e destroy -->
 <input type="hidden" id="id_usuario">
 
@@ -155,6 +158,8 @@
             _token: document.getElementById('token').value
         };
 
+        document.getElementById('btnModalUsuario').disabled = true;
+        
         $.ajax({
             type: 'POST',
             url: '/usuario',
@@ -163,11 +168,9 @@
                 $('#table-usuarios').html(response);
                 $('#usuarioModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
-                
+                document.getElementById('btnModalUsuario').disabled = false;
                 if (xhr.status == 422) {
                     var errors = xhr.responseJSON.errors;
 
@@ -183,16 +186,19 @@
                         }
                     }
                 } else {
-                    // Alerta para erros
-
+                    $('#usuarioModal').modal('hide');
+                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                    var toast = document.getElementById('liveToast');
+                    var bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
                 }
             }
         });
+
     }
 
     function modalEditar(usuario)
     {   
-        console.log(usuario)
         // Limpar form
         limparModal();
         
@@ -249,8 +255,6 @@
                 $('#table-usuarios').html(response);
                 $('#usuarioModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
                 if (xhr.status == 422) {
@@ -268,7 +272,11 @@
                         }
                     }
                 } else {
-                    // Alerta para erros
+                    $('#usuarioModal').modal('hide');
+                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                    var toast = document.getElementById('liveToast');
+                    var bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
 
                 }
             }
@@ -299,11 +307,13 @@
                 $('#table-usuarios').html(response);
                 $('#excluirModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
-                // Alerta de erros
+                $('#excluirModal').modal('hide');
+                document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                var toast = document.getElementById('liveToast');
+                var bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
             }
         });
     }
@@ -332,11 +342,13 @@
                 $('#table-usuarios').html(response);
                 $('#ativarModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
-                // Alerta de erros
+                $('#ativarModal').modal('hide');
+                document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                var toast = document.getElementById('liveToast');
+                var bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
             }
         });
     }
@@ -354,6 +366,7 @@
         // Limpando formulario
         document.getElementById('name').value = '';
         document.getElementById('email').value = '';
+        document.getElementById('btnModalUsuario').disabled = false;
     }    
 
 </script>

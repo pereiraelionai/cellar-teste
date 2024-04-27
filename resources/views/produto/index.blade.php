@@ -72,6 +72,9 @@
 <!-- Modal excluir produto -->
 @include('layouts/modalExcluir', ['tipo' => 'Produto'])
 
+<!-- Alerta de erro -->
+@include('layouts/alerta')
+
 <!-- Id produto para o update e destroy -->
 <input type="hidden" id="id_produto">
 
@@ -108,8 +111,6 @@
                 $('#table-produtos').html(response);
                 $('#produtoModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
                 
@@ -128,7 +129,11 @@
                         }
                     }
                 } else {
-                    // Alerta para erros
+                    $('#produtoModal').modal('hide');
+                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                    var toast = document.getElementById('liveToast');
+                    var bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
 
                 }
             }
@@ -173,8 +178,6 @@
                 $('#table-produtos').html(response);
                 $('#produtoModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
                 if (xhr.status == 422) {
@@ -192,7 +195,11 @@
                         }
                     }
                 } else {
-                    // Alerta para erros
+                    $('#produtoModal').modal('hide');
+                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                    var toast = document.getElementById('liveToast');
+                    var bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
 
                 }
             }
@@ -223,11 +230,13 @@
                 $('#table-produtos').html(response);
                 $('#excluirModal').modal('hide');
 
-                // Alerta de sucesso
-
             },
             error: function(xhr, status, error) {
-                // Alerta de erros
+                $('#excluirModal').modal('hide');
+                document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
+                var toast = document.getElementById('liveToast');
+                var bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
             }
         });
     }
