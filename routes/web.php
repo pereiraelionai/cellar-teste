@@ -25,7 +25,7 @@ Route::get('/', function () {
 Auth::routes(['verify' => true]);
 
 Route::middleware('auth', 'verified')->group(function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('permissao:categoria');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::get('/categoria', [CategoriaController::class, 'index'])->name('categoria.index')->middleware('permissao:categoria');
     Route::post('/categoria', [CategoriaController::class, 'store'])->name('categoria.store')->middleware('permissao:categoria');

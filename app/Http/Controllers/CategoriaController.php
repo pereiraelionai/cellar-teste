@@ -112,7 +112,8 @@ class CategoriaController extends Controller
                                   ->orWhere('categorias.usuario_id', Auth::user()->id);
                         })
                         ->orWhereHas('usuarios', function ($query) {
-                            $query->where('created_by', Auth::user()->id);
+                            $query->where('created_by', Auth::user()->id)
+                                ->orWhere('created_by', Auth::user()->created_by);
                         })
                         ->orderByDesc('id');
     }

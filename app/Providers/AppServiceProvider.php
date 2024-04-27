@@ -48,10 +48,10 @@ class AppServiceProvider extends ServiceProvider
                             SELECT c.id, c.nome, c.usuario_id, u.created_by, c.deleted_at 
                             FROM categorias AS c
                             LEFT JOIN users AS u ON u.id = c.usuario_id
-                            WHERE (c.usuario_id = ? OR c.usuario_id = ? OR u.created_by = ?) 
+                            WHERE (c.usuario_id = ? OR c.usuario_id = ? OR u.created_by = ? OR u.created_by = ?) 
                             AND c.deleted_at IS NULL 
                             AND nome = ?
-                        ", [Auth::user()->id, Auth::user()->created_by, Auth::user()->id, $value]);
+                        ", [Auth::user()->id, Auth::user()->created_by, Auth::user()->id, Auth::user()->created_by, $value]);
             
         
             if($categorias) return false;
@@ -68,10 +68,10 @@ class AppServiceProvider extends ServiceProvider
                             SELECT p.id, p.nome, p.usuario_id, u.created_by, p.deleted_at 
                             FROM produtos AS p
                             LEFT JOIN users AS u ON u.id = p.usuario_id
-                            WHERE (p.usuario_id = ? OR p.usuario_id = ? OR u.created_by = ?) 
+                            WHERE (p.usuario_id = ? OR p.usuario_id = ? OR u.created_by = ? OR u.created_by = ?) 
                             AND p.deleted_at IS NULL 
                             AND nome = ?
-                        ", [Auth::user()->id, Auth::user()->created_by, Auth::user()->id, $value]);
+                        ", [Auth::user()->id, Auth::user()->created_by, Auth::user()->id, Auth::user()->created_by, $value]);
             
         
             if($produtos) return false;

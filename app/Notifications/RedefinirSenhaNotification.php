@@ -75,7 +75,7 @@ class RedefinirSenhaNotification extends Notification
     protected function buildMailMessage($url)
     {
         return (new MailMessage)
-            ->subject(Lang::get('Reset Password Notification'))
+            ->subject(Lang::get('Redefinir Senha'))
             ->greeting('Olá')
             ->line(Lang::get('Você está recebendo este e-mail porque recebemos uma solicitação de redefinição de senha da sua conta.'))
             ->action(Lang::get('Resetar senha'), $url)

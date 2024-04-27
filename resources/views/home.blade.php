@@ -41,6 +41,7 @@
                 </div>
               </div>
             </div>  
+            @if(Auth::user()->admin)
             <div class="col-lg">
               <div class="card card-stats mb-4 mb-xl-0" style="height: 130px;">
                 <div class="card-body card-dash">
@@ -57,7 +58,8 @@
                   </div>
                 </div>
               </div>
-            </div>                             
+            </div>  
+            @endif                           
       </div>
 </div>
 @endsection

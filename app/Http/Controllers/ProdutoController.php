@@ -76,10 +76,15 @@ class ProdutoController extends Controller
 
         // Validações
         $regras = [
-            'nome' => 'required|min:2|max:30|produto', // A validação produto verifica se o produto já nao foi criada por algum usuario relacionado
             'valor' => 'required|valor',
             'categoria' => 'required|exists:categorias,id'
         ];
+        
+        if ($produto->nome != $request->input('nome')) {
+            $regras['nome'] = 'required|min:2|max:30|produto'; // A validação produto verifica se o produto já nao foi criada por algum usuario relacionado
+        } else {
+            $regras['nome'] = 'required|min:2|max:30';
+        }
 
         $msg = [
             'required' => 'O campo :attribute é obrigatório.',
@@ -136,7 +141,8 @@ class ProdutoController extends Controller
                                 ->orWhere('produtos.usuario_id', Auth::user()->created_by);
                       })
                       ->orWhereHas('usuarios', function ($query) {
-                          $query->where('created_by', Auth::user()->id);
+                          $query->where('created_by', Auth::user()->id)
+                                ->orWhere('created_by', Auth::user()->created_by);
                       })
                       ->orderByDesc('id');
     }

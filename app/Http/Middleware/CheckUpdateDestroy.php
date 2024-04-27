@@ -40,7 +40,8 @@ class CheckUpdateDestroy
                                                     ->orWhere('categorias.usuario_id', Auth::user()->id);
                                             })
                                             ->orWhereHas('usuarios', function ($query) {
-                                                $query->where('created_by', Auth::user()->id);
+                                                $query->where('created_by', Auth::user()->id)
+                                                    ->orWhere('created_by', Auth::user()->created_by);
                                             });
                                     })
                                     ->first();
@@ -61,7 +62,8 @@ class CheckUpdateDestroy
                                                 ->orWhere('produtos.usuario_id', Auth::user()->created_by);
                                         })
                                         ->orWhereHas('usuarios', function ($query) {
-                                            $query->where('created_by', Auth::user()->id);
+                                            $query->where('created_by', Auth::user()->id)
+                                                ->orWhere('created_by', Auth::user()->created_by);
                                         });
                                 })
                                 ->first();
