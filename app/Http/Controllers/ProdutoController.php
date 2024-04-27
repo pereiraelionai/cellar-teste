@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Produto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\View;
 
 class ProdutoController extends Controller
@@ -17,7 +16,7 @@ class ProdutoController extends Controller
     public function index()
     {   
         $categorias = CategoriaController::getCategorias()->get();
-        $produtos = $this->getProdutos();
+        $produtos = self::getProdutos()->paginate(10);
         
         return view('produto.index', ['produtos' => $produtos, 'categorias' => $categorias]);
     }
@@ -60,7 +59,7 @@ class ProdutoController extends Controller
 
         if(!$produto->id) return response()->json(['message' => 'Erro ao cadastrar produto'], 500);
 
-        $produtos = $this->getProdutos();
+        $produtos = self::getProdutos()->paginate(10);
 
         $view = View::make('produto/table', ['produtos' => $produtos])->render();                                
 
@@ -106,7 +105,7 @@ class ProdutoController extends Controller
 
         if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar produto'], 500);
 
-        $produtos = $this->getProdutos();
+        $produtos = self::getProdutos()->paginate(10);
 
         $view = View::make('produto/table', ['produtos' => $produtos])->render();                                
 
@@ -121,14 +120,14 @@ class ProdutoController extends Controller
         $produto = Produto::find($id);
         if(!$produto->delete()) return response()->json(['message' => 'Erro ao excluir produto.'], 500);
 
-        $produtos = $this->getProdutos();
+        $produtos = self::getProdutos()->paginate(10);
 
         $view = View::make('produto/table', ['produtos' => $produtos])->render();  
 
         return response()->json($view, 200);
     }
 
-    private function getProdutos()
+    public static function getProdutos()
     {
         return Produto::with('categorias')
                       ->with('usuarios')
@@ -139,7 +138,6 @@ class ProdutoController extends Controller
                       ->orWhereHas('usuarios', function ($query) {
                           $query->where('created_by', Auth::user()->id);
                       })
-                      ->orderByDesc('id')
-                      ->paginate(10);
+                      ->orderByDesc('id');
     }
 }

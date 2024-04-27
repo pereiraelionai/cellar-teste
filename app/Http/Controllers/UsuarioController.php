@@ -16,7 +16,7 @@ class UsuarioController extends Controller
      */
     public function index()
     {   
-        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = self::getUsuarios()->withTrashed()->paginate(10);
 
         return view('usuario.index', ['usuarios' => $usuarios]);
     }
@@ -71,7 +71,7 @@ class UsuarioController extends Controller
 
         if(!$permissao->id) return response()->json(['message' => 'Erro ao cadastrar permissões'], 500);
 
-        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = self::getUsuarios()->withTrashed()->paginate(10);
 
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();                                
 
@@ -127,7 +127,7 @@ class UsuarioController extends Controller
 
         if(!$updatedSuccess) return response()->json(['message' => 'Erro ao editar usuário', 500]);
     
-        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = self::getUsuarios()->withTrashed()->paginate(10);
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();
     
         return response()->json($view, 200);
@@ -142,7 +142,7 @@ class UsuarioController extends Controller
         $usuario = User::withTrashed()->find($id);
         if(!$usuario->delete()) return response()->json(['message' => 'Erro ao inativar usuário.'], 500);
 
-        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = self::getUsuarios()->withTrashed()->paginate(10);
 
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();  
 
@@ -154,10 +154,15 @@ class UsuarioController extends Controller
         $usuario = User::withTrashed()->find($id);
         if (!$usuario->restore()) return response()->json(['message' => 'Erro ao ativar usuário.'], 500);
 
-        $usuarios = User::withTrashed()->with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id)->paginate(10);
+        $usuarios = self::getUsuarios()->withTrashed()->paginate(10);
 
         $view = View::make('usuario/table', ['usuarios' => $usuarios])->render();  
 
         return response()->json($view, 200);
+    }
+
+    public static function getUsuarios() 
+    {
+        return User::with('permissao')->where('id', Auth::user()->id)->orWhere('created_by', Auth::user()->id);
     }
 }

@@ -65,7 +65,8 @@ class VerificarEmailNotification extends Notification
             ->subject(Lang::get('Confirmação de Email'))
             ->greeting('Olá')
             ->line(Lang::get('Por favor, clique no botão abaixo e verifique o seu email.'))
-            ->action(Lang::get('Verifique seu email'), $url);
+            ->action(Lang::get('Verifique seu email'), $url)
+            ->line(Lang::get('Sua senha para acesso ao sistema é: Cellar@123'));
     }
 
     /**

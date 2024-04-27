@@ -23,6 +23,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $categorias = CategoriaController::getCategorias()->count();
+        $produtos = ProdutoController::getProdutos()->count();
+        $usuarios = UsuarioController::getUsuarios()->count();
+
+        $data = array();
+        $data['categorias'] = $categorias;
+        $data['produtos'] = $produtos;
+        $data['usuarios'] = $usuarios;
+
+        return view('home', ['data' => $data]);
     }
 }

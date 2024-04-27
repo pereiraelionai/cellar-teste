@@ -13,7 +13,7 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-2">Categorias Cadastradas</h5>
-                      <span class="h3 font-weight-bold mb-0">5</span>
+                      <span class="h3 font-weight-bold mb-0">{{ $data['categorias'] }}</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-success text-white rounded-circle shadow">
@@ -29,8 +29,8 @@
                 <div class="card-body card-dash">
                   <div class="row">
                     <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-2">Valor em Produtos</h5>
-                      <span class="h3 font-weight-bold mb-0">R$ 50,00</span>
+                      <h5 class="card-title text-uppercase text-muted mb-2">Produtos Cadastrados</h5>
+                      <span class="h3 font-weight-bold mb-0">{{ $data['produtos'] }}</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-success text-white rounded-circle shadow">
@@ -47,7 +47,7 @@
                   <div class="row">
                     <div class="col">
                       <h5 class="card-title text-uppercase text-muted mb-2">Usuários Ativos</h5>
-                      <span class="h3 font-weight-bold mb-0">8</span>
+                      <span class="h3 font-weight-bold mb-0">{{ $data['usuarios'] }}</span>
                     </div>
                     <div class="col-auto">
                       <div class="icon icon-shape bg-success text-white rounded-circle shadow">
