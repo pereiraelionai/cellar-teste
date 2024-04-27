@@ -72,9 +72,6 @@
 <!-- Modal excluir produto -->
 @include('layouts/modalExcluir', ['tipo' => 'Produto'])
 
-<!-- Alerta de erro -->
-@include('layouts/alerta')
-
 <!-- Id produto para o update e destroy -->
 <input type="hidden" id="id_produto">
 
@@ -130,10 +127,11 @@
                     }
                 } else {
                     $('#produtoModal').modal('hide');
-                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
-                    var toast = document.getElementById('liveToast');
-                    var bsToast = new bootstrap.Toast(toast);
-                    bsToast.show();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: xhr.responseJSON.message,
+                    });
 
                 }
             }
@@ -196,10 +194,11 @@
                     }
                 } else {
                     $('#produtoModal').modal('hide');
-                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
-                    var toast = document.getElementById('liveToast');
-                    var bsToast = new bootstrap.Toast(toast);
-                    bsToast.show();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: xhr.responseJSON.message,
+                    });
 
                 }
             }
@@ -233,10 +232,11 @@
             },
             error: function(xhr, status, error) {
                 $('#excluirModal').modal('hide');
-                document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
-                var toast = document.getElementById('liveToast');
-                var bsToast = new bootstrap.Toast(toast);
-                bsToast.show();
+                Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: xhr.responseJSON.message,
+                    });
             }
         });
     }

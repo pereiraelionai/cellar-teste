@@ -50,10 +50,6 @@
 <!-- Modal excluir categoria -->
 @include('layouts/modalExcluir', ['tipo' => 'Categoria'])
 
-
-<!-- Alerta de erro -->
-@include('layouts/alerta')
-
 <!-- Id categoria para o update e destroy -->
 <input type="hidden" id="id_categoria">
 
@@ -102,10 +98,11 @@
                     }
                 } else {
                     $('#categoriaModal').modal('hide');
-                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
-                    var toast = document.getElementById('liveToast');
-                    var bsToast = new bootstrap.Toast(toast);
-                    bsToast.show();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: xhr.responseJSON.message,
+                    });
                 }
             }
         });
@@ -159,10 +156,11 @@
                     }
                 } else {
                     $('#categoriaModal').modal('hide');
-                    document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
-                    var toast = document.getElementById('liveToast');
-                    var bsToast = new bootstrap.Toast(toast);
-                    bsToast.show();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: xhr.responseJSON.message,
+                    });
                 }
             }
         });
@@ -195,10 +193,11 @@
             },
             error: function(xhr, status, error) {
                 $('#excluirModal').modal('hide');
-                document.getElementById('msg-toast').innerHTML = xhr.responseJSON.message
-                var toast = document.getElementById('liveToast');
-                var bsToast = new bootstrap.Toast(toast);
-                bsToast.show();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro!',
+                        text: xhr.responseJSON.message,
+                    });
             }
         });
     }
