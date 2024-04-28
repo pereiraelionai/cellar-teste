@@ -19,10 +19,10 @@ class CheckUpdateDestroy
      */
     
     /**
-     * Middleware para verificar se o ID da categoria, produto ou usuário a ser editado, excluído ou ativado pertence ao usuário atual ou ao usuário que o criou.
-     * 
      * Este middleware é aplicado em rotas que lidam com operações de atualização, exclusão ou ativação de recursos (categorias, produtos ou usuários) no sistema.
-     * Ele verifica se o ID especificado na solicitação pertence ao usuário autenticado ou ao usuário que o criou. Se o ID não pertencer a nenhum desses usuários, a solicitação será negada com um status 403 (Não autorizado).
+     * Ele verifica se o ID especificado na solicitação pertence ao usuário autenticado ou ao seu grupo de usuarios. Se o ID não pertencer a nenhum desses usuários, a solicitação será negada com um status 403 (Não autorizado).
+     * 
+     * O grupo de usuário inclui o usuário administrador que criou o usuário autenticado e todos os usuários criados por esse usuário administrador.
      */
 
     public function handle(Request $request, Closure $next, $controller): Response

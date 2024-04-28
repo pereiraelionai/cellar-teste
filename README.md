@@ -1,66 +1,37 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Cellar Vinhos | Teste PHP Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este projeto é uma aplicação web desenvolvida em Laravel que fornece um sistema capaz de criar e gerenciar categorias e produtos. Além disso, há dois tipos de usuários: Administrador e Usuário padrão.
 
-## About Laravel
+Ao realizar um cadastro na página de cadastro, será criado um usuário Administrador, que após logado poderá criar outros usuários com perfil Usuário para acessarem o sistema. Para realizar o primeriro login, é necessário acessar o email informado para confirmaçao do cadastro.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O administrador tem permissão para gerenciar usuários, gerenciar permissões, criar, editar e excluir categorias e produtos. Por outro lado, o usuário padrão terá suas permissões conforme determinados pelo usuário Administrador.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Recursos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Autenticação de usuários e confirmação de cadastro via email;
+- Dashboard com resumo das informações;
+- Gerenciamento de categorias e produtos, o que inclui, criar, editar e excluir;
+- Gerencimento de permissão dos usuários;
+- Resetar e mudar a senha atráves do esqueci minha senha.
 
-## Learning Laravel
+OBS. Quando o usuário Administrador cria um outro usuário na página de gerenciamento de usuário, esse usuário recebe a **senha padrão: Cellar@123**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Instalação
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Após clonar ou realizar o download do projeto atráves do repositório do [GitHub](https://github.com/pereiraelionai/cellar-teste), siga os passos abaixo:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Instale as dependências do composer - (composer install);
+2. Instale as dependências do npm, esse passo é necessário pois o sistema utiliza os recursos de autenticação do laravel/ui - (npm install);
+3. Copie as informações do arquivo .env.example para o arquivo .env - (apenas substitua o DB_USERNAME e o DB_PASSWORD com as informações de acesso do seu DB);
+4. No banco de dados Mysql crie o database cellar - (CREATE DATABASE cellar);
+5. Execute as migrações - (php artisan migrate);
+6. Execute php artisan serve;
+7. Execute npm run dev.
 
-## Laravel Sponsors
+O sistema estará disponível em http://localhost:8000
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Recursos Necessários
 
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- PHP ^8.1;
+- Node ^18;
+- Mysql ^10;
