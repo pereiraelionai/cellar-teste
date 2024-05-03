@@ -1,4 +1,4 @@
-## Cellar Vinhos | Teste PHP Laravel
+## Descrição
 
 Este projeto é uma aplicação web desenvolvida em Laravel que fornece um sistema capaz de criar e gerenciar categorias e produtos. Além disso, há dois tipos de usuários: Administrador e Usuário padrão.
 
